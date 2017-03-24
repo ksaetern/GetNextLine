@@ -1,0 +1,39 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    todolist                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ksaetern <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/03/24 02:42:42 by ksaetern          #+#    #+#              #
+#    Updated: 2017/03/24 02:42:47 by ksaetern         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+step 1:
+learn static variables.
+function prototyped
+
+-submit 2 files
+	get_next_line.c get_next_line.h
+-5 function max, read malloc free
+-use your libft
+-check for memory leaks
+-author file
+/
+-write a function that returns a line from read from a fd
+line to '\n' or EOF
+
+int		get_next_line(const int fd, char **line)
+
+-first parameter is the fd that will be used to read
+-2nd parameter is the address of a pointer to a character that will be used to
+	save the line read from the file descriptor.
+- return value:
+	1  = a line has read
+	0  = read is done
+	-1 = error occured
+- function must return its result without \n
+- get_next_line.h: prototype the function get_next_line.
+	include macro that allows you to choose the size of the reading buffer for read
+	#define BUFF_SIZE 32
