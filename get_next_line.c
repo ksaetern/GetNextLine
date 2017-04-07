@@ -13,10 +13,10 @@
 #include "get_next_line.h"
 #include "stdio.h"
 
-static t_list			*find_fd(t_list **saved, int fd)
+static t_list		*find_fd(t_list **saved, int fd)
 {
-	t_list				*node;
-	t_next				*dealio;
+	t_list			*node;
+	t_next			*dealio;
 
 	node = *saved;
 	while (node)
@@ -37,14 +37,38 @@ static t_list			*find_fd(t_list **saved, int fd)
 	return (node);
 }
 
-int						get_next_line(const int fd, char **line)
+int					parse_saved(t_list *list, char **line, int nline)
 {
-	static t_list		*saved;
-	t_list				*list;
-	char				str[BUFF_SIZE + 1];
-	int					get;
-	int					nline;
-	int					nlen;
+	char			*tmp;
+	int				nlen;
+
+	nlen = ft_strlen(((t_next*)list->content)->str);
+	tmp = ((t_next*)list->content)->str;
+	if (ft_strchr(((t_next*)list->content)->str, '\n'))
+	{
+		*line = ft_strsub(((t_next*)list->content)->str, 0, nline);
+		((t_next*)list->content)->str =
+		ft_strsub(((t_next*)list->content)->str, (nline + 1),
+			((nlen - nline) + 1));
+		free(tmp);
+		return (1);
+	}
+	if (ft_strlen(((t_next *)list->content)->str) > 0)
+	{
+		*line = ft_strdup(((t_next *)list->content)->str);
+		ft_strclr(((t_next *)list->content)->str);
+		return (1);
+	}
+	return (0);
+}
+
+int					get_next_line(const int fd, char **line)
+{
+	static t_list	*saved;
+	t_list			*list;
+	char			str[BUFF_SIZE + 1];
+	int				get;
+	int				nline;
 
 	if (fd < 0 || read(fd, str, 0) < 0 || !line)
 		return (-1);
@@ -58,22 +82,7 @@ int						get_next_line(const int fd, char **line)
 			break ;
 	}
 	nline = ft_until(((t_next*)list->content)->str, '\n');
-	nlen = ft_strlen(((t_next*)list->content)->str);
-	/*printf("nline = %d\nnlen = %d\n", nline, nlen);*/
-	if (ft_strchr(((t_next*)list->content)->str, '\n'))
-	{	
-		//printf("strlen= %d\nnline= %d\n===\ncontent[%s]\n===\n", nlen, nline, ((t_next*)list->content)->str);
-		*line = ft_strsub(((t_next*)list->content)->str, 0, nline);
-		((t_next*)list->content)->str = ft_strsub(((t_next*)list->content)->str, (nline + 1), ((nlen - nline) + 1));
-		nlen = ft_strlen(((t_next*)list->content)->str);
-		//printf("\n--strlen= %d\nnline= %d\n===\ncontent[%s]\n===\n", nlen, nline, ((t_next*)list->content)->str);
+	if (parse_saved(list, line, nline))
 		return (1);
-	}
-	if (ft_strlen(((t_next *)list->content)->str) > 0)
-	{
-		*line = ft_strdup(((t_next *)list->content)->str);
-		ft_strclr(((t_next *)list->content)->str);
-		return (1);
-	}
 	return (0);
 }
