@@ -57,6 +57,7 @@ int					parse_saved(t_list *list, char **line, int nline)
 	{
 		*line = ft_strdup(((t_next *)list->content)->str);
 		ft_strclr(((t_next *)list->content)->str);
+		free(tmp);
 		return (1);
 	}
 	return (0);

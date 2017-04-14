@@ -17,7 +17,7 @@
 # include <unistd.h>
 # include "libft/libft.h"
 
-# define BUFF_SIZE 20
+# define BUFF_SIZE 8
 
 typedef struct		s_next {
 	char			*str;
