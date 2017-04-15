@@ -16,7 +16,7 @@
 static t_list		*find_fd(t_list **saved, int fd)
 {
 	t_list			*node;
-	t_next			*dealio;
+	t_next			dealio;
 
 	node = *saved;
 	while (node)
@@ -27,23 +27,23 @@ static t_list		*find_fd(t_list **saved, int fd)
 	}
 	if (!node)
 	{
-		dealio = (t_next*)ft_memalloc(sizeof(t_next));
-		dealio->str = "\0";
-		dealio->fd = fd;
-		node = ft_lstnew(dealio, sizeof(t_next));
+		dealio.str = ft_strnew(1);
+		dealio.str[0] = '\0';
+		dealio.fd = fd;
+		node = ft_lstnew(&dealio, sizeof(t_next));
 		ft_lstadd(saved, node);
 		node = *saved;
 	}
 	return (node);
 }
 
-int					parse_saved(t_list *list, char **line, int nline)
+int					parse_saved(t_list *list, char **line, char *tmp)
 {
-	char			*tmp;
 	int				nlen;
+	int				nline;
 
+	nline = ft_until(((t_next*)list->content)->str, '\n');
 	nlen = ft_strlen(((t_next*)list->content)->str);
-	tmp = ((t_next*)list->content)->str;
 	if (ft_strchr(((t_next*)list->content)->str, '\n'))
 	{
 		*line = ft_strsub(((t_next*)list->content)->str, 0, nline);
@@ -51,6 +51,7 @@ int					parse_saved(t_list *list, char **line, int nline)
 		ft_strsub(((t_next*)list->content)->str, (nline + 1),
 			((nlen - nline) + 1));
 		free(tmp);
+		tmp = NULL;
 		return (1);
 	}
 	if (ft_strlen(((t_next *)list->content)->str) > 0)
@@ -58,6 +59,7 @@ int					parse_saved(t_list *list, char **line, int nline)
 		*line = ft_strdup(((t_next *)list->content)->str);
 		ft_strclr(((t_next *)list->content)->str);
 		free(tmp);
+		tmp = NULL;
 		return (1);
 	}
 	return (0);
@@ -68,8 +70,8 @@ int					get_next_line(const int fd, char **line)
 	static t_list	*saved;
 	t_list			*list;
 	char			str[BUFF_SIZE + 1];
+	char			*tmp;
 	int				get;
-	int				nline;
 
 	if (fd < 0 || read(fd, str, 0) < 0 || !line)
 		return (-1);
@@ -77,13 +79,16 @@ int					get_next_line(const int fd, char **line)
 	while ((get = read(fd, str, BUFF_SIZE)) > 0)
 	{
 		str[get] = '\0';
+		tmp = ((t_next*)list->content)->str;
 		((t_next*)list->content)->str =
 		ft_strjoin(((t_next*)list->content)->str, str);
+		free(tmp);
+		tmp = NULL;
 		if (ft_strchr(str, '\n'))
 			break ;
 	}
-	nline = ft_until(((t_next*)list->content)->str, '\n');
-	if (parse_saved(list, line, nline))
+	tmp = ((t_next*)list->content)->str;
+	if (parse_saved(list, line, tmp))
 		return (1);
 	return (0);
 }
